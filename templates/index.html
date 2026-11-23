@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}National Institute of Cloud Technology | Home{% endblock %}
+
+{% block content %}
+<div class="homepage-container">
+
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-tag">
+        <i class="fa-solid fa-cloud"></i> Assignment 19: Web Hosting with Cloud Object Storage &amp; IP Security
+      </div>
+      <h1 class="hero-title">Secure Enterprise Cloud Portal &amp; Web Hosting</h1>
+      <p class="hero-subtitle">
+        A resilient multi-tiered web architecture hosted on a Cloud Linux VM, powered by AWS S3 Object Storage for static assets, and fortified with military-grade Security Group IP restriction (College Subnet <code>203.XX.XX.XX/32</code>).
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="{{ url_for('gallery') }}" class="btn btn-hero-primary">
+          <i class="fa-solid fa-box-open"></i> Browse S3 Static Assets
+        </a>
+        <a href="{{ url_for('admin_login') }}" class="btn btn-hero-secondary">
+          <i class="fa-solid fa-lock"></i> Access Restricted Admin Portal
+        </a>
+        <a href="{{ url_for('about') }}" class="btn btn-hero-outline">
+          <i class="fa-solid fa-diagram-project"></i> Architecture Diagram
+        </a>
+      </div>
+
+      <div class="security-status-strip">
+        <div class="sec-stat-item">
+          <i class="fa-solid fa-globe text-green"></i>
+          <div>
+            <strong>Public Access Tier</strong>
+            <span>0.0.0.0/0 (Global Web Traffic)</span>
+          </div>
+        </div>
+        <div class="sec-stat-divider"></div>
+        <div class="sec-stat-item">
+          <i class="fa-solid fa-shield-halved text-blue"></i>
+          <div>
+            <strong>Admin Ingress Rule</strong>
+            <span>203.0.113.195/32 (College Network)</span>
+          </div>
+        </div>
+        <div class="sec-stat-divider"></div>
+        <div class="sec-stat-item">
+          <i class="fa-solid fa-database text-yellow"></i>
+          <div>
+            <strong>Object Storage Bucket</strong>
+            <span>s3://vikas-portal-storage</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-image-card">
+      <div class="asset-frame">
+        <div class="asset-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="asset-title">S3 Bucket Object: <code>public-assets/campus_banner.svg</code></span>
+        </div>
+        <div class="asset-body">
+          <img src="{{ url_for('serve_public_storage', filename='campus_banner.svg') }}" alt="S3 Hosted Campus Banner" class="s3-live-asset" />
+        </div>
+        <div class="asset-footer">
+          <span class="badge-s3"><i class="fa-brands fa-aws"></i> AWS S3 Standard</span>
+          <span class="badge-acl"><i class="fa-solid fa-eye"></i> ACL: public-read</span>
+          <span class="badge-region"><i class="fa-solid fa-map-pin"></i> ap-south-1</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOUD ARCHITECTURE PILLARS -->
+  <section class="pillars-section">
+    <div class="section-heading">
+      <h2>Engineered for High Security &amp; Elastic Scalability</h2>
+      <p>Key architectural components implemented according to Assignment 19 requirements.</p>
+    </div>
+
+    <div class="pillars-grid">
+      <div class="pillar-card">
+        <div class="pillar-icon bg-blue"><i class="fa-solid fa-server"></i></div>
+        <h3>Cloud Linux VM</h3>
+        <p>Hosted on Ubuntu Linux with Apache/Nginx reverse proxy, Python runtime, and automated system health telemetry.</p>
+        <div class="pillar-metric">
+          <span>Uptime: 99.98%</span>
+          <span class="badge-running">RUNNING</span>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon bg-amber"><i class="fa-solid fa-cubes"></i></div>
+        <h3>S3 Object Storage</h3>
+        <p>Decoupled static asset repository. Separates public assets (images, stylesheets) from confidential administrative documents.</p>
+        <div class="pillar-metric">
+          <span>Bucket: {{ bucket_stats.bucket_name }}</span>
+          <span class="badge-s3-pill">{{ bucket_stats.total_objects }} Objects</span>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon bg-emerald"><i class="fa-solid fa-shield-cat"></i></div>
+        <h3>Security Groups &amp; IPs</h3>
+        <p>Strict stateful firewall rules restricting Port 22 SSH and the <code>/admin</code> path exclusively to the College IP (203.XX.XX.XX/32).</p>
+        <div class="pillar-metric">
+          <span>Rule: 203.0.113.195/32</span>
+          <span class="badge-sec-pill">STRICT CIDR</span>
+        </div>
+      </div>
+
+      <div class="pillar-card">
+        <div class="pillar-icon bg-purple"><i class="fa-solid fa-lock"></i></div>
+        <h3>HTTPS &amp; TLS 1.3</h3>
+        <p>End-to-end encrypted transport with automatic HTTP (Port 80) to HTTPS (Port 443) redirection and modern cryptographic ciphers.</p>
+        <div class="pillar-metric">
+          <span>Transport: TLS 1.3</span>
+          <span class="badge-ssl-pill">ENCRYPTED</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAMPUS ANNOUNCEMENTS & STATIC FILES PREVIEW -->
+  <section class="dual-section">
+    <div class="dual-left">
+      <div class="section-header-compact">
+        <h3><i class="fa-solid fa-bullhorn text-blue"></i> Latest Campus Notices &amp; Updates</h3>
+        <a href="{{ url_for('announcements') }}" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="announcements-stack">
+        {% for item in announcements %}
+          <div class="announce-card">
+            <div class="announce-header">
+              <span class="badge-cat badge-{{ item.category|lower|replace(' ', '-') }}">{{ item.category }}</span>
+              <span class="announce-date"><i class="fa-regular fa-clock"></i> {{ item.published_at }}</span>
+            </div>
+            <h4>{{ item.title }}</h4>
+            <p>{{ item.summary }}</p>
+            <div class="announce-footer">
+              <span class="author-tag"><i class="fa-solid fa-user-shield"></i> {{ item.author }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="dual-right">
+      <div class="section-header-compact">
+        <h3><i class="fa-solid fa-box-archive text-amber"></i> Public Object Storage Repository</h3>
+        <a href="{{ url_for('gallery') }}" class="view-all-link">Storage Explorer <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="storage-asset-list">
+        {% for obj in public_assets %}
+          <div class="storage-item">
+            <div class="storage-file-icon">
+              {% if 'image' in obj.content_type %}
+                <i class="fa-solid fa-file-image text-blue"></i>
+              {% elif 'pdf' in obj.content_type or 'text' in obj.content_type %}
+                <i class="fa-solid fa-file-lines text-amber"></i>
+              {% else %}
+                <i class="fa-solid fa-file text-gray"></i>
+              {% endif %}
+            </div>
+            <div class="storage-file-info">
+              <span class="filename">{{ obj.filename }}</span>
+              <span class="filemeta">
+                <code>{{ obj.key }}</code> &bull; {{ obj.size_formatted }} &bull; ETag: {{ obj.etag[:10] }}...
+              </span>
+            </div>
+            <div class="storage-file-action">
+              <a href="{{ url_for('serve_public_storage', filename=obj.stored_filename) }}" target="_blank" class="btn-sm-view" title="Open Public Asset">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="storage-highlight-box">
+          <div class="s3-cloud-tag">
+            <i class="fa-solid fa-cloud-arrow-down"></i> S3 Direct Static Hosting
+          </div>
+          <p>
+            Static assets are stored with the <code>public-read</code> ACL. Public users from <code>0.0.0.0/0</code> can view and download them directly without VM overhead.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

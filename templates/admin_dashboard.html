@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Console | Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+
+  <!-- ADMIN SUB-NAV -->
+  <div class="admin-subnav">
+    <div class="subnav-left">
+      <div class="admin-avatar"><i class="fa-solid fa-user-shield"></i></div>
+      <div class="admin-info">
+        <h3>{{ session.get('admin_name', 'Vikas (Lead Admin)') }}</h3>
+        <span class="role-pill">{{ session.get('admin_role', 'SuperAdmin') }} &bull; College Subnet Whitelisted</span>
+      </div>
+    </div>
+
+    <div class="subnav-links">
+      <a href="{{ url_for('admin_dashboard') }}" class="subnav-item active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+      <a href="{{ url_for('admin_storage') }}" class="subnav-item"><i class="fa-solid fa-database"></i> S3 Object Storage</a>
+      <a href="{{ url_for('admin_security_groups') }}" class="subnav-item"><i class="fa-solid fa-shield-halved"></i> Security Groups</a>
+      <a href="{{ url_for('admin_audit_logs') }}" class="subnav-item"><i class="fa-solid fa-receipt"></i> Audit Logs</a>
+      <a href="{{ url_for('admin_announcements') }}" class="subnav-item"><i class="fa-solid fa-bullhorn"></i> Content</a>
+    </div>
+  </div>
+
+  <!-- STATS TILES -->
+  <div class="admin-metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon-wrap bg-blue"><i class="fa-solid fa-server"></i></div>
+      <div class="metric-details">
+        <span class="metric-title">Cloud Linux VM</span>
+        <span class="metric-val">AWS EC2 (Running)</span>
+        <span class="metric-sub">{{ vm_metrics.instance_type }} &bull; {{ vm_metrics.cpu_utilization }} CPU</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon-wrap bg-amber"><i class="fa-solid fa-bucket"></i></div>
+      <div class="metric-details">
+        <span class="metric-title">S3 Object Storage</span>
+        <span class="metric-val">{{ bucket_stats.total_objects }} Objects</span>
+        <span class="metric-sub">{{ bucket_stats.total_size_formatted }} &bull; {{ bucket_stats.storage_class }}</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon-wrap bg-emerald"><i class="fa-solid fa-shield-cat"></i></div>
+      <div class="metric-details">
+        <span class="metric-title">Security Group Rules</span>
+        <span class="metric-val">{{ security_rules|length }} Active Rules</span>
+        <span class="metric-sub">Admin Subnet: <code>203.0.113.195/32</code></span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-icon-wrap bg-purple"><i class="fa-solid fa-network-wired"></i></div>
+      <div class="metric-details">
+        <span class="metric-title">Current Client IP</span>
+        <span class="metric-val text-mono">{{ g.client_ip }}</span>
+        <span class="metric-sub text-green"><i class="fa-solid fa-check"></i> {{ g.ip_tag }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO COLUMN MAIN ADMIN SECTION -->
+  <div class="admin-two-col">
+
+    <!-- LEFT COLUMN: VM DETAILS & S3 STORAGE SUMMARY -->
+    <div class="admin-col-left">
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3><i class="fa-brands fa-aws text-amber"></i> Cloud Virtual Machine Telemetry</h3>
+          <span class="badge-status-running"><i class="fa-solid fa-circle"></i> 2/2 Checks Passed</span>
+        </div>
+        <div class="panel-body">
+          <table class="admin-table-kv">
+            <tr><td>Instance ID</td><td><code>{{ vm_metrics.instance_id }}</code></td></tr>
+            <tr><td>Operating System</td><td>Ubuntu Linux 24.04 LTS (Kernel 6.8.0)</td></tr>
+            <tr><td>Public IPv4 (Elastic IP)</td><td><code>{{ vm_metrics.public_ip }}</code></td></tr>
+            <tr><td>Private VPC IPv4</td><td><code>{{ vm_metrics.private_ip }}</code></td></tr>
+            <tr><td>AWS Region &amp; AZ</td><td>{{ vm_metrics.region }} (ap-south-1a)</td></tr>
+            <tr><td>Attached Security Group</td><td><code>{{ vm_metrics.security_group_id }}</code></td></tr>
+            <tr><td>System Uptime</td><td>{{ vm_metrics.uptime }}</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- QUICK FILE UPLOAD CARD -->
+      <div class="panel-card mt-4">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-cloud-arrow-up text-blue"></i> Upload to Cloud Object Storage</h3>
+          <span class="badge-s3-pill">s3://{{ bucket_stats.bucket_name }}</span>
+        </div>
+        <div class="panel-body">
+          <form action="{{ url_for('admin_upload') }}" method="POST" enctype="multipart/form-data" class="quick-upload-form">
+            <div class="form-group">
+              <label for="file"><i class="fa-solid fa-file-arrow-up"></i> Select File to Upload</label>
+              <input type="file" id="file" name="file" required class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-shield-halved"></i> Access Control List (ACL) &amp; Folder</label>
+              <div class="radio-cards">
+                <label class="radio-card">
+                  <input type="radio" name="category" value="public" checked />
+                  <div class="card-content">
+                    <strong><i class="fa-solid fa-earth-americas text-green"></i> Public Asset</strong>
+                    <span>Path: <code>public-assets/</code> &bull; ACL: <code>public-read</code> (Accessible to 0.0.0.0/0)</span>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="category" value="private" />
+                  <div class="card-content">
+                    <strong><i class="fa-solid fa-lock text-red"></i> Confidential Admin Doc</strong>
+                    <span>Path: <code>admin-docs/</code> &bull; ACL: <code>private</code> (College Subnet Only)</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa-solid fa-arrow-up-from-bracket"></i> Push to S3 Object Storage
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: SECURITY GROUP STATUS & AUDIT LOGS -->
+    <div class="admin-col-right">
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-shield-halved text-emerald"></i> Active Security Group Ingress Rules</h3>
+          <a href="{{ url_for('admin_security_groups') }}" class="view-link">Manage Rules <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="panel-body p-0">
+          <table class="compact-table">
+            <thead>
+              <tr>
+                <th>Rule ID</th>
+                <th>Port / Protocol</th>
+                <th>Source CIDR</th>
+                <th>Scope</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rule in security_rules %}
+                {% if rule.direction == 'INBOUND' %}
+                  <tr>
+                    <td><code>{{ rule.id }}</code></td>
+                    <td><strong>{{ rule.port_range }}</strong> ({{ rule.protocol }})</td>
+                    <td><code>{{ rule.source_cidr }}</code></td>
+                    <td>
+                      <span class="scope-tag {% if 'Public' in rule.scope %}scope-public{% else %}scope-admin{% endif %}">
+                        {{ rule.scope }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="status-indicator-dot {{ rule.status|lower }}"></span> {{ rule.status }}
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RECENT AUDIT LOGS -->
+      <div class="panel-card mt-4">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-list-check text-purple"></i> Live Security Audit Stream</h3>
+          <a href="{{ url_for('admin_audit_logs') }}" class="view-link">Full Logs <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="panel-body p-0">
+          <table class="compact-table">
+            <thead>
+              <tr>
+                <th>Time (UTC)</th>
+                <th>Client IP</th>
+                <th>Endpoint</th>
+                <th>Status</th>
+                <th>Decision</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in recent_logs %}
+                <tr>
+                  <td class="text-mono">{{ log.timestamp.split(' ')[1] }}</td>
+                  <td class="text-mono">{{ log.client_ip }}</td>
+                  <td class="text-mono">{{ log.endpoint }}</td>
+                  <td>
+                    <span class="badge-http badge-{{ log.http_status }}">{{ log.http_status }}</span>
+                  </td>
+                  <td>
+                    <span class="decision-pill decision-{{ log.decision|lower }}">
+                      {{ log.decision }}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

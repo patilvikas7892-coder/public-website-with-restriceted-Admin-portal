@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Console | Security Audit Logs{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+
+  <!-- ADMIN SUB-NAV -->
+  <div class="admin-subnav">
+    <div class="subnav-left">
+      <div class="admin-avatar"><i class="fa-solid fa-user-shield"></i></div>
+      <div class="admin-info">
+        <h3>{{ session.get('admin_name', 'Vikas (Lead Admin)') }}</h3>
+        <span class="role-pill">{{ session.get('admin_role', 'SuperAdmin') }} &bull; Compliance &amp; Forensics</span>
+      </div>
+    </div>
+
+    <div class="subnav-links">
+      <a href="{{ url_for('admin_dashboard') }}" class="subnav-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+      <a href="{{ url_for('admin_storage') }}" class="subnav-item"><i class="fa-solid fa-database"></i> S3 Object Storage</a>
+      <a href="{{ url_for('admin_security_groups') }}" class="subnav-item"><i class="fa-solid fa-shield-halved"></i> Security Groups</a>
+      <a href="{{ url_for('admin_audit_logs') }}" class="subnav-item active"><i class="fa-solid fa-receipt"></i> Audit Logs</a>
+      <a href="{{ url_for('admin_announcements') }}" class="subnav-item"><i class="fa-solid fa-bullhorn"></i> Content</a>
+    </div>
+  </div>
+
+  <div class="s3-console-header">
+    <div class="s3-console-title">
+      <h2><i class="fa-solid fa-file-shield text-purple"></i> Security Audit Trail &amp; Access Log Stream</h2>
+      <p>Immutable forensic record of incoming requests, IP classifications, firewall decisions, and rule evaluations.</p>
+    </div>
+    <div class="s3-header-actions">
+      <button class="btn btn-secondary" onclick="window.location.reload()">
+        <i class="fa-solid fa-arrows-rotate"></i> Refresh Feed
+      </button>
+    </div>
+  </div>
+
+  <!-- AUDIT LOGS TABLE -->
+  <div class="panel-card mt-3">
+    <div class="panel-body p-0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Timestamp (UTC)</th>
+            <th>Client IP</th>
+            <th>Network Classification</th>
+            <th>Method &amp; URI</th>
+            <th>HTTP Status</th>
+            <th>Security Decision</th>
+            <th>Firewall Rule Triggered</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr>
+              <td><code>#{{ log.id }}</code></td>
+              <td class="text-mono font-xs">{{ log.timestamp }}</td>
+              <td><code class="font-bold">{{ log.client_ip }}</code></td>
+              <td>
+                <span class="tag-network {% if 'College' in log.ip_tag or 'Localhost' in log.ip_tag %}network-allowed{% else %}network-blocked{% endif %}">
+                  {{ log.ip_tag }}
+                </span>
+              </td>
+              <td>
+                <span class="badge-method">{{ log.request_method }}</span>
+                <span class="text-mono font-xs">{{ log.endpoint }}</span>
+              </td>
+              <td>
+                <span class="badge-http badge-{{ log.http_status }}">{{ log.http_status }}</span>
+              </td>
+              <td>
+                <span class="decision-pill decision-{{ log.decision|lower }}">
+                  {{ log.decision }}
+                </span>
+              </td>
+              <td>
+                <span class="text-xs text-mono">{{ log.rule_triggered }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

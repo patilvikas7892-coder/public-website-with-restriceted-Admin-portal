@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Campus Announcements | National Institute of Cloud Tech{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-badge"><i class="fa-solid fa-bullhorn"></i> Campus Bulletin</div>
+    <h1>Public Campus Announcements</h1>
+    <p class="header-subtitle">Official notifications published to the public portal (0.0.0.0/0)</p>
+  </div>
+
+  <div class="announcements-grid">
+    {% for item in announcements %}
+      <div class="announce-card-lg">
+        <div class="card-top-strip">
+          <span class="badge-cat badge-{{ item.category|lower|replace(' ', '-') }}">{{ item.category }}</span>
+          <span class="announce-date"><i class="fa-regular fa-calendar"></i> {{ item.published_at }}</span>
+        </div>
+        <h2>{{ item.title }}</h2>
+        <p class="announce-lead">{{ item.summary }}</p>
+        <div class="announce-full-text">
+          {{ item.content }}
+        </div>
+        <div class="card-bottom-strip">
+          <span class="author-info"><i class="fa-solid fa-user-check"></i> Published by: <strong>{{ item.author }}</strong></span>
+          <span class="public-tag"><i class="fa-solid fa-earth-americas"></i> Public Asset</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Console | Manage Content{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+
+  <!-- ADMIN SUB-NAV -->
+  <div class="admin-subnav">
+    <div class="subnav-left">
+      <div class="admin-avatar"><i class="fa-solid fa-user-shield"></i></div>
+      <div class="admin-info">
+        <h3>{{ session.get('admin_name', 'Vikas (Lead Admin)') }}</h3>
+        <span class="role-pill">{{ session.get('admin_role', 'SuperAdmin') }} &bull; Content Publisher</span>
+      </div>
+    </div>
+
+    <div class="subnav-links">
+      <a href="{{ url_for('admin_dashboard') }}" class="subnav-item"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+      <a href="{{ url_for('admin_storage') }}" class="subnav-item"><i class="fa-solid fa-database"></i> S3 Object Storage</a>
+      <a href="{{ url_for('admin_security_groups') }}" class="subnav-item"><i class="fa-solid fa-shield-halved"></i> Security Groups</a>
+      <a href="{{ url_for('admin_audit_logs') }}" class="subnav-item"><i class="fa-solid fa-receipt"></i> Audit Logs</a>
+      <a href="{{ url_for('admin_announcements') }}" class="subnav-item active"><i class="fa-solid fa-bullhorn"></i> Content</a>
+    </div>
+  </div>
+
+  <div class="admin-two-col mt-4">
+    <div class="admin-col-left">
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-pen-to-square text-blue"></i> Publish Public Announcement</h3>
+        </div>
+        <div class="panel-body">
+          <form action="{{ url_for('admin_announcements') }}" method="POST">
+            <div class="form-group">
+              <label for="title">Announcement Title</label>
+              <input type="text" id="title" name="title" required placeholder="e.g. Campus Cloud Symposium 2026" class="form-control" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label for="category">Category</label>
+                <select id="category" name="category" class="form-control">
+                  <option value="Academics">Academics</option>
+                  <option value="Conferences">Conferences</option>
+                  <option value="Security Alert">Security Alert</option>
+                  <option value="Admissions">Admissions</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+              <div class="form-group col-6">
+                <label for="badge">Badge Tag</label>
+                <input type="text" id="badge" name="badge" placeholder="e.g. Important, Urgent" value="Important" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="summary">Short Summary (Displayed on Homepage)</label>
+              <textarea id="summary" name="summary" rows="2" required placeholder="Brief overview of the announcement..." class="form-control"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="content">Full Content Body</label>
+              <textarea id="content" name="content" rows="4" required placeholder="Full announcement text..." class="form-control"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa-solid fa-paper-plane"></i> Publish to Public Website (0.0.0.0/0)
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-col-right">
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-list text-amber"></i> Existing Public Announcements ({{ announcements|length }})</h3>
+        </div>
+        <div class="panel-body p-0">
+          <table class="compact-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in announcements %}
+                <tr>
+                  <td><strong>{{ item.title }}</strong></td>
+                  <td><span class="badge-cat badge-{{ item.category|lower|replace(' ', '-') }}">{{ item.category }}</span></td>
+                  <td class="text-xs text-muted">{{ item.published_at.split(' ')[0] }}</td>
+                  <td>
+                    <form action="{{ url_for('admin_delete_announcement', item_id=item.id) }}" method="POST" onsubmit="return confirm('Delete announcement?');">
+                      <button type="submit" class="btn-action btn-delete" title="Delete">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

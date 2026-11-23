@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Restricted Admin Portal | Login{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-lock-icon">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2>Restricted Admin Portal</h2>
+      <p class="auth-sub">Identity Authentication &bull; College Subnet Verified</p>
+    </div>
+
+    <!-- IP PASSED BADGE -->
+    <div class="ip-verified-badge">
+      <i class="fa-solid fa-shield-check text-green"></i>
+      <div>
+        <strong>Security Group Inspection Passed:</strong>
+        <span>Client IP <code>{{ g.client_ip }}</code> matched College Subnet Rule (<code>203.XX.XX.XX/32</code>).</span>
+      </div>
+    </div>
+
+    {% if error %}
+      <div class="auth-error-alert">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ error }}</span>
+      </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('admin_login') }}" class="auth-form">
+      <div class="form-group">
+        <label for="username"><i class="fa-solid fa-user"></i> Administrator Username</label>
+        <input type="text" id="username" name="username" placeholder="e.g. vikas" required autofocus />
+      </div>
+
+      <div class="form-group">
+        <label for="password"><i class="fa-solid fa-key"></i> Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter secure password" required />
+      </div>
+
+      <div class="credentials-hint-box">
+        <div class="hint-title"><i class="fa-solid fa-lightbulb"></i> Evaluation Test Credentials:</div>
+        <div class="hint-cred">Username: <code>vikas</code> | Password: <code>AdminPassword123!</code></div>
+      </div>
+
+      <button type="submit" class="btn btn-auth-submit">
+        <i class="fa-solid fa-right-to-bracket"></i> Authenticate &amp; Access Console
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <a href="{{ url_for('index') }}"><i class="fa-solid fa-arrow-left"></i> Return to Public Homepage (0.0.0.0/0)</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

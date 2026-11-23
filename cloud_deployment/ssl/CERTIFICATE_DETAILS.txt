@@ -1,0 +1,44 @@
+================================================================================
+HTTPS CERTIFICATE SPECIFICATION & TECHNICAL DETAILS
+Assignment 19: Public Website with Restricted Admin Portal
+Students: Vikas & Vijit
+================================================================================
+
+1. CERTIFICATE OVERVIEW:
+   Common Name (CN): portal.cloudtech.edu
+   Organization: National Institute of Cloud Technology (NICTE)
+   Organizational Unit: Cloud Computing Lab - Assignment 19
+   Country / Locality: IN / Bengaluru, Karnataka
+   Certificate Format: X.509 v3 (PEM Encoded)
+   Serial Number: 638478532441287329148039609818960715302069606582
+
+2. CRYPTOGRAPHIC ALGORITHMS:
+   Signature Algorithm: SHA-256 with RSA Encryption (sha256WithRSAEncryption)
+   Key Pair Type: RSA
+   Public Key Length: 2048 bits
+   Exponent: 65537 (0x10001)
+
+3. VALIDITY PERIOD:
+   Issued On: 2026-11-23 05:05:21 UTC
+   Expires On: 2027-11-23 05:05:21 UTC
+   Duration: 365 Days (1 Year)
+
+4. SUBJECT ALTERNATIVE NAMES (SAN):
+   - DNS: portal.cloudtech.edu
+   - DNS: localhost
+   - IP Address: 127.0.0.1 (Loopback Dev)
+   - IP Address: 203.0.113.195 (Authorized College Admin IP)
+
+5. CIPHER SUITE & TRANSPORT SECURITY (TLS 1.3):
+   Supported Protocols: TLSv1.2, TLSv1.3
+   Recommended Modern Cipher Suites:
+     - TLS_AES_128_GCM_SHA256 (TLS 1.3)
+     - TLS_AES_256_GCM_SHA384 (TLS 1.3)
+     - ECDHE-RSA-AES128-GCM-SHA256 (TLS 1.2)
+     - ECDHE-RSA-AES256-GCM-SHA384 (TLS 1.2)
+   HTTP Strict Transport Security (HSTS): Enabled (max-age=31536000; includeSubDomains)
+
+6. SECURITY GROUP / PORT MAPPING:
+   - Port 80 (HTTP): Ingress 0.0.0.0/0 -> Redirect 301 to Port 443
+   - Port 443 (HTTPS): Ingress 0.0.0.0/0 -> TLS Encrypted Traffic
+================================================================================

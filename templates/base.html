@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}National Institute of Cloud Tech | Secure Portal{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- TOP INTERACTIVE SECURITY SIMULATOR BAR -->
+  <div class="simulation-bar">
+    <div class="sim-container">
+      <div class="sim-info">
+        <span class="sim-badge"><i class="fa-solid fa-shield-halved"></i> SECURITY LAB SIMULATOR</span>
+        <span class="sim-desc">Detected Client IP: <strong>{{ g.client_ip }}</strong></span>
+        <span class="sim-tag {% if 'College' in g.ip_tag or 'Localhost' in g.ip_tag %}tag-allowed{% else %}tag-blocked{% endif %}">
+          <i class="fa-solid {% if 'College' in g.ip_tag or 'Localhost' in g.ip_tag %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i> {{ g.ip_tag }}
+        </span>
+      </div>
+
+      <div class="sim-actions">
+        <span class="sim-label">Simulate Network:</span>
+        <button class="sim-btn btn-allowed" onclick="simulateIP('203.0.113.195')" title="Simulate College Campus Leased Line (Assignment 19 203.XX.XX.XX/32)">
+          <i class="fa-solid fa-building-columns"></i> College IP (203.0.113.195)
+        </button>
+        <button class="sim-btn btn-blocked" onclick="simulateIP('198.51.100.45')" title="Simulate External Public Internet / Outside Untrusted IP">
+          <i class="fa-solid fa-globe"></i> External WAN (198.51.100.45)
+        </button>
+        <button class="sim-btn btn-blocked" onclick="simulateIP('49.37.112.89')" title="Simulate Mobile 4G/5G Hotspot">
+          <i class="fa-solid fa-mobile-screen"></i> Mobile ISP (49.37.112.89)
+        </button>
+        <button class="sim-btn btn-dev" onclick="simulateIP('127.0.0.1')" title="Reset to Localhost Loopback">
+          <i class="fa-solid fa-laptop-code"></i> Localhost
+        </button>
+        <div class="custom-ip-box">
+          <input type="text" id="customIpInput" placeholder="Custom IP (e.g. 10.0.0.5)" />
+          <button class="btn-apply-ip" onclick="applyCustomIP()">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN NAVIGATION -->
+  <header class="main-nav-wrapper">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="brand-logo">
+        <div class="logo-icon"><i class="fa-solid fa-cloud-bolt"></i></div>
+        <div class="logo-text">
+          <span class="brand-title">NICTE Cloud Portal</span>
+          <span class="brand-sub">Assignment 19 &bull; Vikas &amp; Vijit</span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+          <i class="fa-solid fa-house"></i> Public Home
+        </a>
+        <a href="{{ url_for('announcements') }}" class="nav-item {% if request.endpoint == 'announcements' %}active{% endif %}">
+          <i class="fa-solid fa-bullhorn"></i> Announcements
+        </a>
+        <a href="{{ url_for('gallery') }}" class="nav-item {% if request.endpoint == 'gallery' %}active{% endif %}">
+          <i class="fa-solid fa-box-archive"></i> Static Storage
+        </a>
+        <a href="{{ url_for('about') }}" class="nav-item {% if request.endpoint == 'about' %}active{% endif %}">
+          <i class="fa-solid fa-circle-info"></i> Architecture
+        </a>
+      </nav>
+
+      <div class="nav-cta">
+        {% if session.get('admin_logged_in') %}
+          <a href="{{ url_for('admin_dashboard') }}" class="btn-admin-pill logged-in">
+            <i class="fa-solid fa-shield-cat"></i> Admin Console ({{ session.get('admin_username') }})
+          </a>
+          <a href="{{ url_for('admin_logout') }}" class="btn-logout" title="Sign Out">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </a>
+        {% else %}
+          <a href="{{ url_for('admin_login') }}" class="btn-admin-pill">
+            <i class="fa-solid fa-lock"></i> Restricted Admin Portal
+            <span class="badge-ip-restrict">College IP Only</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- FLASH MESSAGES / SYSTEM ALERTS -->
+  <div class="content-wrapper">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- MODERN FOOTER -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="footer-brand">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>National Institute of Cloud Technology</span>
+        </div>
+        <p class="footer-desc">
+          Cloud Computing Lab Practical Assignment 19. Designed and implemented by <strong>Vikas &amp; Vijit</strong>.
+          Demonstrating Cloud VM Provisioning, Object Storage Integration, and IP-Based Access Control Security Groups.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Cloud Resources</h4>
+        <ul>
+          <li><i class="fa-brands fa-aws"></i> AWS EC2 (Ubuntu 24.04 LTS VM)</li>
+          <li><i class="fa-solid fa-database"></i> AWS S3 Bucket (<code>vikas-portal-storage</code>)</li>
+          <li><i class="fa-solid fa-shield"></i> Security Group CIDR Filtering</li>
+          <li><i class="fa-solid fa-lock"></i> Strict Admin Subnet (<code>203.0.113.195/32</code>)</li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Verification</h4>
+        <ul>
+          <li><a href="{{ url_for('index') }}"><i class="fa-solid fa-check text-green"></i> Public Website (0.0.0.0/0)</a></li>
+          <li><a href="{{ url_for('admin_login') }}"><i class="fa-solid fa-shield-halved text-blue"></i> Admin Portal (College IP)</a></li>
+          <li><a href="{{ url_for('gallery') }}"><i class="fa-solid fa-folder text-yellow"></i> Object Storage Assets</a></li>
+          <li><a href="{{ url_for('about') }}"><i class="fa-solid fa-diagram-project"></i> Architecture Diagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 NICTE Cloud Portal. Assignment 19 &bull; Vikas &amp; Vijit. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,10 @@
+CONFIDENTIAL CLOUD SECURITY AUDIT REPORT
+Target: AWS EC2 Instance (i-08a9f23e41b) & S3 Storage (s3://vikas-portal-storage)
+Prepared by: Vikas (Cloud Security Engineer)
+Status: STRICT ACCESS ONLY (College Subnet CIDR 203.0.113.195/32)
+
+Firewall Rules Summary:
+- Port 80 (HTTP): Open to 0.0.0.0/0 (301 Redirect to HTTPS 443)
+- Port 443 (HTTPS): Open to 0.0.0.0/0 (Public Website)
+- Port 22 (SSH): Restricted to 203.0.113.195/32 (Admin Station)
+- URI /admin: Protected by Security Group & Application IP Filter Middleware

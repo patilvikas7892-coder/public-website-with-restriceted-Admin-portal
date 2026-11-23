@@ -1,0 +1,13 @@
+NATIONAL INSTITUTE OF CLOUD COMPUTING & ENGINEERING
+CAMPUS INFORMATION BROCHURE (ACADEMIC YEAR 2026-2027)
+
+Domain: Web Hosting & Secure Cloud Architectures
+Student Assignment 19: Public Website with Restricted Admin Portal
+Architect: Vikas & Vijit
+
+Highlights:
+- High performance Cloud VM Infrastructure (AWS EC2 / Ubuntu Linux)
+- High availability Object Storage (AWS S3 Bucket: vikas-portal-storage)
+- Military-Grade Network Security Groups & IP Filtering
+- Public Access (0.0.0.0/0) for Homepage and Static Assets
+- Strict Admin Subnet Restriction (203.0.113.195/32 - College Only)

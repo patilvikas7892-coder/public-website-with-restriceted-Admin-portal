@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Object Storage Static Assets | NICTE{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-badge"><i class="fa-solid fa-database"></i> Cloud Object Storage</div>
+    <h1>Public Static Assets Explorer</h1>
+    <p class="header-subtitle">
+      Static assets hosted on bucket <code>s3://{{ bucket_stats.bucket_name }}/public-assets/</code> with <code>public-read</code> ACL.
+    </p>
+  </div>
+
+  <!-- S3 BUCKET STATS BAR -->
+  <div class="s3-stats-banner">
+    <div class="s3-stat-item">
+      <span class="label">Bucket Identifier</span>
+      <span class="value">{{ bucket_stats.bucket_name }}</span>
+    </div>
+    <div class="s3-stat-item">
+      <span class="label">AWS Region</span>
+      <span class="value">{{ bucket_stats.region }}</span>
+    </div>
+    <div class="s3-stat-item">
+      <span class="label">Public Objects</span>
+      <span class="value">{{ bucket_stats.public_objects }}</span>
+    </div>
+    <div class="s3-stat-item">
+      <span class="label">Storage Class</span>
+      <span class="value">{{ bucket_stats.storage_class }}</span>
+    </div>
+    <div class="s3-stat-item">
+      <span class="label">Encryption</span>
+      <span class="value">{{ bucket_stats.encryption }}</span>
+    </div>
+  </div>
+
+  <div class="gallery-grid">
+    {% for obj in assets %}
+      <div class="gallery-card">
+        <div class="gallery-preview">
+          {% if 'image' in obj.content_type %}
+            <img src="{{ url_for('serve_public_storage', filename=obj.stored_filename) }}" alt="{{ obj.filename }}" />
+          {% else %}
+            <div class="doc-placeholder">
+              <i class="fa-solid fa-file-lines"></i>
+              <span>{{ obj.content_type }}</span>
+            </div>
+          {% endif %}
+        </div>
+        <div class="gallery-info">
+          <h4>{{ obj.filename }}</h4>
+          <div class="meta-row">
+            <span><i class="fa-solid fa-hard-drive"></i> {{ obj.size_formatted }}</span>
+            <span><i class="fa-solid fa-tag"></i> {{ obj.acl }}</span>
+          </div>
+          <div class="meta-row">
+            <span><code>{{ obj.key }}</code></span>
+          </div>
+          <div class="gallery-actions">
+            <a href="{{ url_for('serve_public_storage', filename=obj.stored_filename) }}" target="_blank" class="btn-sm-primary">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Asset
+            </a>
+            <a href="{{ url_for('serve_public_storage', filename=obj.stored_filename) }}" download="{{ obj.filename }}" class="btn-sm-secondary">
+              <i class="fa-solid fa-download"></i> Download
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

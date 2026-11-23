@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}403 Forbidden - Security Group Access Restricted{% endblock %}
+
+{% block content %}
+<div class="restricted-container">
+  <div class="firewall-card">
+    <div class="firewall-header">
+      <div class="firewall-icon">
+        <i class="fa-solid fa-shield-virus"></i>
+      </div>
+      <div class="firewall-title-box">
+        <div class="status-pill status-blocked">
+          <i class="fa-solid fa-ban"></i> SECURITY GROUP INGRESS BLOCKED
+        </div>
+        <h1>403 Forbidden: Restricted Administration Portal</h1>
+        <p class="subtitle">Cloud Security Firewall has denied access to this administrative interface.</p>
+      </div>
+    </div>
+
+    <div class="firewall-body">
+      <div class="rule-violation-alert">
+        <div class="alert-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="alert-text">
+          <strong>Security Policy Enforcement (Assignment 19):</strong>
+          Administrative endpoints (<code>/admin/*</code>) and management services (SSH Port 22) are strictly isolated behind the authorized College Campus IP (<code>203.XX.XX.XX/32</code>). Your current network IP is not present in the Cloud Security Group Inbound Whitelist.
+        </div>
+      </div>
+
+      <div class="diagnostic-grid">
+        <div class="diag-item">
+          <span class="diag-label"><i class="fa-solid fa-network-wired"></i> Detected Client IP</span>
+          <span class="diag-val ip-highlight text-red">{{ client_ip }}</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-label"><i class="fa-solid fa-tag"></i> Network Classification</span>
+          <span class="diag-val text-red">{{ ip_tag }}</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-label"><i class="fa-solid fa-lock"></i> Required Ingress CIDR</span>
+          <span class="diag-val text-green">{{ required_subnet }}</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-label"><i class="fa-solid fa-route"></i> Attempted Target</span>
+          <span class="diag-val text-mono">{{ attempted_path }}</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-label"><i class="fa-solid fa-clock"></i> Timestamp (UTC)</span>
+          <span class="diag-val text-mono">{{ timestamp }}</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-label"><i class="fa-solid fa-file-shield"></i> Security Rule Triggered</span>
+          <span class="diag-val text-mono">SG-INBOUND-ADMIN-01 (DEFAULT_DENY)</span>
+        </div>
+      </div>
+
+      <div class="firewall-explanation">
+        <h3><i class="fa-solid fa-circle-question"></i> How to Access the Admin Portal?</h3>
+        <p>
+          According to the cloud deployment specifications, administrators must connect through the official <strong>College Campus Network</strong> or an authorized campus VPN leased line.
+        </p>
+        <div class="demo-solver-box">
+          <p><strong>Faculty / Evaluator Instant Demo Verification:</strong></p>
+          <p>Click below to simulate connecting from the designated College Campus IP (<code>203.0.113.195</code>):</p>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="simulateIPAndRedirect('203.0.113.195', '{{ attempted_path }}')">
+              <i class="fa-solid fa-building-columns"></i> Switch to College Campus Network (203.0.113.195)
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+              <i class="fa-solid fa-arrow-left"></i> Return to Public Website (0.0.0.0/0)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="firewall-footer">
+      <span>Cloud Architecture: AWS EC2 Security Groups + Linux iptables + Nginx IP Filter</span>
+      <span>Vikas &amp; Vijit &bull; Assignment 19</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
